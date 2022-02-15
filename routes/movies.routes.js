@@ -40,16 +40,33 @@ router.get('/movies', (req, res) => {
 router.get('/movies/:id', (req, res, next) => {
     const { id } = req.params;
 
-    Celebrity.find()
-    .then((dbCelebs) => {
-    res.render('movies/movie-details', { dbCelebs });
-    })
-
     Movie.findById(id)
     .populate('cast')
         .then((foundMovie) => {
         console.log(foundMovie);
         res.render('movies/movie-details', foundMovie);
+        })
+        .catch((err) => next(err));
+});
+
+router.post('/movie/:id/delete', (req, res, next) => {
+    const { id } = req.params;
+  
+    Movie.findByIdAndRemove(id)
+      .then(() => {
+        res.redirect('/movies');
+      })
+      .catch((err) => next(err));
+
+});
+
+router.get('/movies/:id/edit', (req, res, next) => {
+    const { id } = req.params;
+
+
+    Movie.findById(id)
+        .then((foundMovie) => {
+        res.render('movies/edit-movie', foundMovie);
         })
         .catch((err) => next(err));
 });
